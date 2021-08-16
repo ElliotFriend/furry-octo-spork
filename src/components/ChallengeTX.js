@@ -1,19 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './ChallengeTX.css';
+import { Utils, Networks, TransactionBuilder } from 'stellar-sdk';
 
 export default function ChallengeTX(props) {
+  let readChallengeTx = Utils.readChallengeTx
+  let xdr = props.xdr
+  let serverKey = "GCUZ6YLL5RQBTYLTTQLPCM73C5XAIUGK2TIMWQH7HPSGWVS2KJ2F3CHS"
+
+  useEffect(() => {
+    if (props.xdr) {
+      let challengeTransaction = Utils.readChallengeTx(xdr, serverKey, Networks.TESTNET, "testanchor.stellar.org", "testanchor.stellar.org");
+      props.setTxDetails({
+        seqNumber: challengeTransaction.tx._sequence
+      })
+    }
+  }, [props.xdr])
+
   return (
     <div className="col order-3">
       <h3>Challenge Transaction XDR</h3>
       <p><code className="bg-light">
         {props.xdr}
       </code></p>
+      <p><code className="light">
+        Something
+      </code></p>
       <button className="btn btn-primary">Sign Transaction</button>
       <h3>Challenge Transaction Details</h3>
       <div className="row">
         <p>1. The Client verifies that the transaction has an invalid sequence number 0</p>
         <div className="col">
-          <pre className="bg-light">###</pre>
+          <pre className="bg-light">{props.txDetails.seqNumber}</pre>
         </div>
         <div className="col">
           Sequence Number
