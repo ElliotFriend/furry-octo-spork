@@ -1,18 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ChallengeTX.css';
-import { Utils, Networks, TransactionBuilder } from 'stellar-sdk';
+import { Utils } from 'stellar-sdk';
 
 export default function ChallengeTX(props) {
-  let readChallengeTx = Utils.readChallengeTx
   let xdr = props.xdr
-  let serverKey = "GCUZ6YLL5RQBTYLTTQLPCM73C5XAIUGK2TIMWQH7HPSGWVS2KJ2F3CHS"
+  let [seqNumber, setSeqNumber] = useState();
+  let [signedBy, setSignedBy] = useState();
+  let [operations, setOperations] = useState();
+  // let [webAuthDomainOp, setWadOp] = useState();
 
   useEffect(() => {
     if (props.xdr) {
-      let challengeTransaction = Utils.readChallengeTx(xdr, serverKey, Networks.TESTNET, "testanchor.stellar.org", "testanchor.stellar.org");
-      props.setTxDetails({
-        seqNumber: challengeTransaction.tx._sequence
-      })
+      let challengeTransaction = Utils.readChallengeTx(xdr, props.serverKey, props.networkPassphrase, props.anchor, props.anchor);
+      console.log(challengeTransaction);
+      setSeqNumber(challengeTransaction.tx._sequence)
+      if (Utils.verifyTxSignedBy(challengeTransaction.tx, props.serverKey)) {
+        setSignedBy(Utils.gatherTxSigners(challengeTransaction.tx, [props.serverKey]))
+        // console.log(new Buffer.from(challengeTransaction.tx._signatures[0]._attributes.signature).toString('base64'))
+        // console.log(Utils.gatherTxSigners(challengeTransaction.tx, [serverKey]))
+      }
+      setOperations(challengeTransaction.tx._operations)
     }
   }, [props.xdr])
 
@@ -22,15 +29,12 @@ export default function ChallengeTX(props) {
       <p><code className="bg-light">
         {props.xdr}
       </code></p>
-      <p><code className="light">
-        Something
-      </code></p>
       <button className="btn btn-primary">Sign Transaction</button>
       <h3>Challenge Transaction Details</h3>
       <div className="row">
         <p>1. The Client verifies that the transaction has an invalid sequence number 0</p>
         <div className="col">
-          <pre className="bg-light">{props.txDetails.seqNumber}</pre>
+          <pre className="bg-light">{seqNumber}</pre>
         </div>
         <div className="col">
           Sequence Number
@@ -39,7 +43,7 @@ export default function ChallengeTX(props) {
       <div className="row">
         <p>2. The Client verifies that the transaction is signed by the Server Account obtained through discovery flow.</p>
         <div className="col">
-          <pre className="bg-light">SOMERANDOMPUBKEY?</pre>
+          <pre className="bg-light">{signedBy}</pre>
         </div>
         <div className="col">
           Signed by
@@ -55,7 +59,7 @@ export default function ChallengeTX(props) {
           </ol>
         </p>
         <div className="col">
-          <pre className="bg-light">manage_data(something: something)?</pre>
+          <pre className="bg-light">{operations ? `${operations[0].type}\n${operations[0].source}\n${operations[0].name}\n${operations[0].value}` : null}</pre>
         </div>
         <div className="col">
           First Operation
@@ -70,7 +74,7 @@ export default function ChallengeTX(props) {
           </ol>
         </p>
         <div className="col">
-          <pre className="bg-light">manage_data(web_auth_domain: something)?</pre>
+          <pre className="bg-light">{!operations ? null : operations[1] ? `${operations[1].type}\n${operations[1].source}\n${operations[1].name}\n${operations[1].value}` : null}</pre>
         </div>
         <div className="col">
           web_auth_domain Operation
@@ -85,7 +89,7 @@ export default function ChallengeTX(props) {
           </ol>
         </p>
         <div className="col">
-          <pre className="bg-light">manage_data(something: client_domain|server account)</pre>
+          <pre className="bg-light">{!operations ? null : operations.length >= 3 ? "Something here" : null}</pre>
         </div>
         <div className="col">
           Other Operations
