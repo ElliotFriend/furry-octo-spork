@@ -36,7 +36,7 @@ export default function RequestTX(props) {
   }
 
   return (
-    <div className="col order-1">
+    <div>
       <h3>Request Challenge Transaction</h3>
       <form>
         <div className="mb-3">

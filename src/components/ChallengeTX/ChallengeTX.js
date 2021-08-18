@@ -57,7 +57,7 @@ export default function ChallengeTX(props) {
   }
 
   return (
-    <div className="col order-3">
+    <div>
       <h3>Challenge Transaction XDR</h3>
       <pre className="user-select-all text-break text-wrap">
         {props.xdr}

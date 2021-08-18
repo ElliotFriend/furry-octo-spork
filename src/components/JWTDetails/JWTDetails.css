@@ -1,0 +1,12 @@
+dt.col-3 {
+  text-align: right;
+}
+
+dd.col-9 {
+  text-align: left;
+}
+
+[aria-expanded="false"] > .expanded,
+[aria-expanded="true"] > .collapsed {
+  display: none;
+}
