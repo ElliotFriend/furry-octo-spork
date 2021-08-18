@@ -1,36 +1,31 @@
 import React, { useState } from 'react';
 import './App.css';
-import RequestTX from './components/RequestTX';
-import ChallengeTX from './components/ChallengeTX';
-import JWTDisplay from './components/JWTDisplay';
-import JWTDetails from './components/JWTDetails';
+import Header from './components/Header/Header'
+import RequestTX from './components/RequestTX/RequestTX';
+import ChallengeTX from './components/ChallengeTX/ChallengeTX';
+import JWTDisplay from './components/JWTDisplay/JWTDisplay';
+import JWTDetails from './components/JWTDetails/JWTDetails';
 
 function App() {
   let [pubkey, setPubkey] = useState('GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK')
   let [anchor, setAnchor] = useState('testanchor.stellar.org')
-  let [authEndpoint, setAuthEndpoint] = useState('')
-  let [serverKey, setServerKey] = useState()
-  let [networkPassphrase, setNetworkPassphrase] = useState('');
+  let [toml, setToml] = useState()
   let [xdr, setXDR] = useState('')
   let [jwt, setJWT] = useState('')
 
   return (
-    <div className="App container-fluid p-4">
-      <div className="row row-cols-2">
+    <div className="App">
+      <Header />
+      <div className="tab-content" id="myTabContent">
         <RequestTX pubkey={pubkey} setPubkey={setPubkey}
                    anchor={anchor} setAnchor={setAnchor}
-                   setAuthEndpoint={setAuthEndpoint}
-                   setServerKey={setServerKey}
-                   setNetworkPassphrase={setNetworkPassphrase}
+                   setToml={setToml}
                    setXDR={setXDR} />
-        <ChallengeTX xdr={xdr}
-                     networkPassphrase={networkPassphrase}
-                     anchor={anchor}
-                     authEndpoint={authEndpoint}
-                     serverKey={serverKey}
+        <ChallengeTX anchor={anchor}
+                     toml={toml}
+                     xdr={xdr}
                      setJWT={setJWT} />
         <JWTDisplay jwt={jwt} />
-        <JWTDetails jwt={jwt} />
       </div>
     </div>
   );

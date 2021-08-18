@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './JWTDetails.css';
 import JWTDetailPart from './JWTDetailPart';
 import JWTDescription from './JWTDescription'
-let jwt = require('jsonwebtoken')
 
 export default function JWTDetails(props) {
   let [jwtDetails, setJwtDetails] = useState({

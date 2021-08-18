@@ -7,42 +7,43 @@ export default function ChallengeTX(props) {
   // GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK
   // SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS
   let xdr = props.xdr
+  let toml = props.toml
   let [seqNumber, setSeqNumber] = useState();
   let [signedBy, setSignedBy] = useState();
   let [operations, setOperations] = useState();
   let [secretKey, setSecretKey] = useState('SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS');
-  // let [webAuthDomainOp, setWadOp] = useState();
 
   useEffect(() => {
-    if (props.xdr) {
-      let challengeTransaction = Utils.readChallengeTx(xdr, props.serverKey, props.networkPassphrase, props.anchor, props.anchor);
+    if (xdr && toml) {
+      let challengeTransaction = Utils.readChallengeTx(xdr, toml.SIGNING_KEY, toml.NETWORK_PASSPHRASE, props.anchor, props.anchor);
       // console.log(challengeTransaction);
       setSeqNumber(challengeTransaction.tx._sequence)
-      if (Utils.verifyTxSignedBy(challengeTransaction.tx, props.serverKey)) {
-        setSignedBy(Utils.gatherTxSigners(challengeTransaction.tx, [props.serverKey]))
+      if (Utils.verifyTxSignedBy(challengeTransaction.tx, toml.SIGNING_KEY)) {
+        setSignedBy(Utils.gatherTxSigners(challengeTransaction.tx, [toml.SIGNING_KEY]))
         // console.log(new Buffer.from(challengeTransaction.tx._signatures[0]._attributes.signature).toString('base64'))
         // console.log(Utils.gatherTxSigners(challengeTransaction.tx, [serverKey]))
       }
       setOperations(challengeTransaction.tx._operations)
     }
-  }, [props.xdr])
+  }, [xdr])
 
   const handleChange = (e) => {
     setSecretKey(e.target.value)
   }
 
   const signTransaction = async () => {
-    if (props.xdr && secretKey) {
+    if (xdr && secretKey) {
       let kp = Keypair.fromSecret(secretKey)
-      let transaction = TransactionBuilder.fromXDR(props.xdr, props.networkPassphrase)
+      let transaction = TransactionBuilder.fromXDR(xdr, toml.NETWORK_PASSPHRASE)
       transaction.sign(kp)
       let jwt = await submitTransaction(transaction.toXDR())
-      props.setJWT(jwt)
+      await props.setJWT(jwt)
+      document.querySelector("#jwt-tab").click()
     }
   }
 
   const submitTransaction = async (transactionXDR) => {
-    let res = await fetch(`${props.authEndpoint}`, {
+    let res = await fetch(`${toml.WEB_AUTH_ENDPOINT}`, {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -57,16 +58,16 @@ export default function ChallengeTX(props) {
   }
 
   return (
-    <div>
+    <div class="tab-pane fade" id="challenge" role="tabpanel" aria-labelledby="challenge-tab">
       <h3>Challenge Transaction XDR</h3>
       <pre className="user-select-all text-break text-wrap">
-        {props.xdr}
+        {xdr}
       </pre>
       <div className="mb-3">
         <label htmlFor="secretKey" className="form-label">Secret Key</label>
         <input onChange={handleChange} type="password" className="form-control" id="secretKey" name="secretKey" />
       </div>
-      <button onClick={signTransaction} className="btn btn-primary">Sign Transaction</button>
+      <button onClick={signTransaction} className="btn btn-primary">Authenticate</button>
       <h3>Challenge Transaction Details</h3>
       <div className="row">
         <p>1. The Client verifies that the transaction has an invalid sequence number 0</p>
