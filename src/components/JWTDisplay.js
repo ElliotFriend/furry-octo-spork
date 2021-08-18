@@ -1,11 +1,12 @@
 import React from 'react';
 import './JWTDisplay.css';
 
-export default function JWTDisplay() {
+export default function JWTDisplay(props) {
   return (
     <div className="col order-2">
-      <pre className="bg-light">
-        See the raw JWT
+      <h3>JSON Web Token</h3>
+      <pre className="bg-light user-select-all text-break text-wrap">
+        {props.jwt}
       </pre>
     </div>
   )

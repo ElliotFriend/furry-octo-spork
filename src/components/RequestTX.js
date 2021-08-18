@@ -24,7 +24,7 @@ export default function RequestTX(props) {
   const parseTomlFile = async (e) => {
     e.preventDefault()
     let stellarToml = await StellarTomlResolver.resolve(props.anchor)
-    console.log(stellarToml)
+    // console.log(stellarToml)
     await props.setAuthEndpoint(stellarToml.WEB_AUTH_ENDPOINT)
     await props.setServerKey(stellarToml.SIGNING_KEY)
     await props.setNetworkPassphrase(stellarToml.NETWORK_PASSPHRASE)

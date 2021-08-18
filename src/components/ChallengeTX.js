@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './ChallengeTX.css';
-import { Utils } from 'stellar-sdk';
+import { Utils, TransactionBuilder, Keypair } from 'stellar-sdk';
 
 export default function ChallengeTX(props) {
+  // testnet account
+  // GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK
+  // SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS
   let xdr = props.xdr
   let [seqNumber, setSeqNumber] = useState();
   let [signedBy, setSignedBy] = useState();
   let [operations, setOperations] = useState();
+  let [secretKey, setSecretKey] = useState('SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS');
   // let [webAuthDomainOp, setWadOp] = useState();
 
   useEffect(() => {
     if (props.xdr) {
       let challengeTransaction = Utils.readChallengeTx(xdr, props.serverKey, props.networkPassphrase, props.anchor, props.anchor);
-      console.log(challengeTransaction);
+      // console.log(challengeTransaction);
       setSeqNumber(challengeTransaction.tx._sequence)
       if (Utils.verifyTxSignedBy(challengeTransaction.tx, props.serverKey)) {
         setSignedBy(Utils.gatherTxSigners(challengeTransaction.tx, [props.serverKey]))
@@ -23,13 +27,46 @@ export default function ChallengeTX(props) {
     }
   }, [props.xdr])
 
+  const handleChange = (e) => {
+    setSecretKey(e.target.value)
+  }
+
+  const signTransaction = async () => {
+    if (props.xdr && secretKey) {
+      let kp = Keypair.fromSecret(secretKey)
+      let transaction = TransactionBuilder.fromXDR(props.xdr, props.networkPassphrase)
+      transaction.sign(kp)
+      let jwt = await submitTransaction(transaction.toXDR())
+      props.setJWT(jwt)
+    }
+  }
+
+  const submitTransaction = async (transactionXDR) => {
+    let res = await fetch(`${props.authEndpoint}`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "transaction": transactionXDR
+      })
+    })
+    let json = await res.json()
+    return json.token
+  }
+
   return (
     <div className="col order-3">
       <h3>Challenge Transaction XDR</h3>
-      <p><code className="bg-light">
+      <pre className="user-select-all text-break text-wrap">
         {props.xdr}
-      </code></p>
-      <button className="btn btn-primary">Sign Transaction</button>
+      </pre>
+      <div className="mb-3">
+        <label htmlFor="secretKey" className="form-label">Secret Key</label>
+        <input onChange={handleChange} type="password" className="form-control" id="secretKey" name="secretKey" />
+      </div>
+      <button onClick={signTransaction} className="btn btn-primary">Sign Transaction</button>
       <h3>Challenge Transaction Details</h3>
       <div className="row">
         <p>1. The Client verifies that the transaction has an invalid sequence number 0</p>

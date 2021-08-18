@@ -12,9 +12,10 @@ function App() {
   let [serverKey, setServerKey] = useState()
   let [networkPassphrase, setNetworkPassphrase] = useState('');
   let [xdr, setXDR] = useState('')
+  let [jwt, setJWT] = useState('')
 
   return (
-    <div className="App container p-4">
+    <div className="App container-fluid p-4">
       <div className="row row-cols-2">
         <RequestTX pubkey={pubkey} setPubkey={setPubkey}
                    anchor={anchor} setAnchor={setAnchor}
@@ -25,9 +26,11 @@ function App() {
         <ChallengeTX xdr={xdr}
                      networkPassphrase={networkPassphrase}
                      anchor={anchor}
-                     serverKey={serverKey} />
-        <JWTDisplay />
-        <JWTDetails />
+                     authEndpoint={authEndpoint}
+                     serverKey={serverKey}
+                     setJWT={setJWT} />
+        <JWTDisplay jwt={jwt} />
+        <JWTDetails jwt={jwt} />
       </div>
     </div>
   );
