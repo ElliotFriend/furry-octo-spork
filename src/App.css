@@ -44,3 +44,7 @@
 .row {
   border: 0.25px dotted red;
 }
+
+#myTabContent {
+  margin-bottom: 6rem!important;
+}

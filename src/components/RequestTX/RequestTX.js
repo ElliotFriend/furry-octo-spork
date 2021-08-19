@@ -37,8 +37,13 @@ export default function RequestTX(props) {
   }
 
   return (
-    <div class="tab-pane fade show active" id="request" role="tabpanel" aria-labelledby="request-tab">
-      <h3>Request Challenge Transaction</h3>
+    <div className="tab-pane fade show active" id="request" role="tabpanel" aria-labelledby="request-tab">
+      <h1>Welcome!</h1>
+      <p className="lead">Your journey to JWT enlightenment begins now</p>
+      <p>The first thing you'll need to do is request a "challenge transaction" from a SEP-0010 endpoint. Often these are asset anchors. If you don't know which one to use, I suggest you start with the <abbr title="Stellar Development Foundation" className="initialism">SDF</abbr> testanchor.</p>
+      <p>This challenge transaction will be generated for a specific stellar account. In the next step, you'll need to sign this transaction, so enter a public key to an account you can sign for. You will be asked to sign with your secret key in the next step.</p>
+      <p className="small"><em>Note: This account does not need to be funded on the blockchain in order for a valid JWT to be issued.</em></p>
+      <h3 className="mt-4">Request Challenge Transaction</h3>
       <form>
         <div className="mb-3">
           <label htmlFor="publicKey" className="form-label">Public Key</label>
