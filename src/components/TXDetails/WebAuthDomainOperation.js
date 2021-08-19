@@ -22,10 +22,10 @@ export default function WebAuthDomainOperation(props) {
           <dd className="col-9">
             {operation
               ? <pre>
-                  {operation.type}<br />
-                  {operation.source}<br />
-                  {operation.name}<br />
-                  {Buffer.from(operation.value).toString()}
+                  type:   {operation.type}<br />
+                  source: {operation.source}<br />
+                  name:   {operation.name}<br />
+                  value:  {Buffer.from(operation.value).toString()}
                 </pre>
               : null}
           </dd>
