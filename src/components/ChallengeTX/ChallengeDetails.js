@@ -35,9 +35,9 @@ export default function ChallengeDetails(props) {
       <h3>Challenge Transaction Details</h3>
       <p>Here are the details of the transaction, as well as what the client is intended to be checking to make sure the transaction has been properly created.</p>
       { seqNumber ? <SequenceNumber seqNumber={seqNumber} /> : null }
-      { signedBy ? <SignedByServer signedBy={signedBy} /> : null }
-      { operations ? <FirstOperation operation={operations[0]} /> : null }
-      { wadOperation ? <WebAuthDomainOperation operation={wadOperation} /> : null }
+      { signedBy ? <SignedByServer signedBy={signedBy} serverKey={toml.SIGNING_KEY} /> : null }
+      { operations.length > 0 ? <FirstOperation operation={operations[0]} pubkey={props.pubkey} anchor={props.anchor} /> : null }
+      { wadOperation ? <WebAuthDomainOperation operation={wadOperation} serverKey={toml.SIGNING_KEY} anchor={props.anchor} /> : null }
       { otherOperations ? <OtherOperations operations={otherOperations} /> : null }
       { cdOperation ? <ClientDomainOperation operation={cdOperation} /> : null }
       <div className="row">

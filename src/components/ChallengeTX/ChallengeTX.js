@@ -57,7 +57,8 @@ export default function ChallengeTX(props) {
           </div>
           <button onClick={signTransaction} className="btn btn-primary">Authenticate with Server</button>
         </div>
-        <ChallengeDetails anchor={props.anchor}
+        <ChallengeDetails pubkey={props.pubkey}
+                          anchor={props.anchor}
                           xdr={props.xdr}
                           toml={props.toml} />
       </div>

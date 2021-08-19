@@ -21,7 +21,8 @@ function App() {
                    anchor={anchor} setAnchor={setAnchor}
                    setToml={setToml}
                    setXDR={setXDR} />
-        <ChallengeTX anchor={anchor}
+        <ChallengeTX pubkey={pubkey}
+                     anchor={anchor}
                      toml={toml}
                      xdr={xdr}
                      setJWT={setJWT} />
