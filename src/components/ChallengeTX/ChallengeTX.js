@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ChallengeTX.css';
-import { Utils, TransactionBuilder, Keypair } from 'stellar-sdk';
+import { TransactionBuilder, Keypair } from 'stellar-sdk';
+import ChallengeDetails from './ChallengeDetails'
 
 export default function ChallengeTX(props) {
   // testnet account
@@ -8,24 +9,7 @@ export default function ChallengeTX(props) {
   // SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS
   let xdr = props.xdr
   let toml = props.toml
-  let [seqNumber, setSeqNumber] = useState();
-  let [signedBy, setSignedBy] = useState();
-  let [operations, setOperations] = useState();
   let [secretKey, setSecretKey] = useState('SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS');
-
-  useEffect(() => {
-    if (xdr && toml) {
-      let challengeTransaction = Utils.readChallengeTx(xdr, toml.SIGNING_KEY, toml.NETWORK_PASSPHRASE, props.anchor, props.anchor);
-      // console.log(challengeTransaction);
-      setSeqNumber(challengeTransaction.tx._sequence)
-      if (Utils.verifyTxSignedBy(challengeTransaction.tx, toml.SIGNING_KEY)) {
-        setSignedBy(Utils.gatherTxSigners(challengeTransaction.tx, [toml.SIGNING_KEY]))
-        // console.log(new Buffer.from(challengeTransaction.tx._signatures[0]._attributes.signature).toString('base64'))
-        // console.log(Utils.gatherTxSigners(challengeTransaction.tx, [serverKey]))
-      }
-      setOperations(challengeTransaction.tx._operations)
-    }
-  }, [xdr])
 
   const handleChange = (e) => {
     setSecretKey(e.target.value)
@@ -58,89 +42,24 @@ export default function ChallengeTX(props) {
   }
 
   return (
-    <div class="tab-pane fade" id="challenge" role="tabpanel" aria-labelledby="challenge-tab">
-      <h3>Challenge Transaction XDR</h3>
-      <pre className="user-select-all text-break text-wrap">
-        {xdr}
-      </pre>
-      <div className="mb-3">
-        <label htmlFor="secretKey" className="form-label">Secret Key</label>
-        <input onChange={handleChange} type="password" className="form-control" id="secretKey" name="secretKey" />
-      </div>
-      <button onClick={signTransaction} className="btn btn-primary">Authenticate</button>
-      <h3>Challenge Transaction Details</h3>
+    <div className="container tab-pane fade" id="challenge" role="tabpanel" aria-labelledby="challenge-tab">
       <div className="row">
-        <p>1. The Client verifies that the transaction has an invalid sequence number 0</p>
-        <div className="col">
-          <pre className="bg-light">{seqNumber}</pre>
+        <div className="col-4">
+          <h1>Way to go!</h1>
+          <p>Now, let's take a look at what we got from the server. You can see the XDR formatted challenge transaction, and the details of that transaction here. When you're comfortable that everything appears to be in order, enter your Stellar secret key below to send the signed transaction to the server, so you can receive your JWT.</p>
+          <h3>Challenge Transaction XDR</h3>
+          <pre className="px-3 user-select-all text-break text-wrap">
+            {xdr}
+          </pre>
+          <div className="mb-3">
+            <label htmlFor="secretKey" className="form-label">Secret Key</label>
+            <input onChange={handleChange} type="password" className="text-center form-control" id="secretKey" name="secretKey" />
+          </div>
+          <button onClick={signTransaction} className="btn btn-primary">Authenticate with Server</button>
         </div>
-        <div className="col">
-          Sequence Number
-        </div>
-      </div>
-      <div className="row">
-        <p>2. The Client verifies that the transaction is signed by the Server Account obtained through discovery flow.</p>
-        <div className="col">
-          <pre className="bg-light">{signedBy}</pre>
-        </div>
-        <div className="col">
-          Signed by
-        </div>
-      </div>
-      <div className="row">
-        <p>
-          3. The Client verifies that the transaction's first operation is a Manage Data operation that has its:
-          <ol>
-            <li>Source account set to the Client Account</li>
-            <li>Key set to <code>&lt;home domain&gt; auth</code> where the home domain is the Home Domain.</li>
-            <li>Value set to a nonce value.</li>
-          </ol>
-        </p>
-        <div className="col">
-          <pre className="bg-light">{operations ? `${operations[0].type}\n${operations[0].source}\n${operations[0].name}\n${operations[0].value}` : null}</pre>
-        </div>
-        <div className="col">
-          First Operation
-        </div>
-      </div>
-      <div className="row">
-        <p>
-          4. The Client verifies that if the transaction has a Manage Data operation with key <code>web_auth_domain</code> that it has:
-          <ol>
-            <li>Source account set to the Server Account</li>
-            <li>Value set to the Server's domain that the client requested the challenge from.</li>
-          </ol>
-        </p>
-        <div className="col">
-          <pre className="bg-light">{!operations ? null : operations[1] ? `${operations[1].type}\n${operations[1].source}\n${operations[1].name}\n${operations[1].value}` : null}</pre>
-        </div>
-        <div className="col">
-          web_auth_domain Operation
-        </div>
-      </div>
-      <div className="row">
-        <p>
-          5. The Client verifies that if the transaction has other operations they are Manage Data operations and that their source account is set to:
-          <ol>
-            <li>The Client Domain Account if the Manage Data operation key is set to <code>client_domain</code></li>
-            <li>Otherwise, the Server Account.</li>
-          </ol>
-        </p>
-        <div className="col">
-          <pre className="bg-light">{!operations ? null : operations.length >= 3 ? "Something here" : null}</pre>
-        </div>
-        <div className="col">
-          Other Operations
-        </div>
-      </div>
-      <div className="row">
-        <p>6. If the client included a client domain in the request, and the transaction has a Manage Data operation with key <code>client_domain</code>, the Client obtains a signature from the Client Domain Account and adds it to the challenge transaction</p>
-        <div className="col">
-          <pre className="bg-light">manage_data(client_domain, sig from client_domain account)</pre>
-        </div>
-        <div className="col">
-          client_domain signature
-        </div>
+        <ChallengeDetails anchor={props.anchor}
+                          xdr={props.xdr}
+                          toml={props.toml} />
       </div>
     </div>
   )
