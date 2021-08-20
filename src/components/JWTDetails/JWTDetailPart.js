@@ -6,14 +6,16 @@ export default function JWTDetailPart(props) {
     let returnArr = []
     Object.entries(jwtPart).forEach(([key, val], i) => {
       returnArr = returnArr.concat(
-        <div key={i} className="row">
-          <div className="col-2">
+        <dl key={i} className="row">
+          <dt className="col-3">
             {key}
-          </div>
-          <div className="col">
-            {val}
-          </div>
-        </div>
+          </dt>
+          <dd className="col-9">
+            <pre>
+              {val}
+            </pre>
+          </dd>
+        </dl>
       )
     })
     return returnArr

@@ -26,11 +26,11 @@ export default function JWTDetails(props) {
   return (
     <div>
       <h3>JWT Details</h3>
-      <h4>Header</h4>
+      <h5>Header</h5>
       <JWTDetailPart jwtPart={jwtDetails.header} />
-      <h4>Payload</h4>
+      <h5>Payload</h5>
       <JWTDetailPart jwtPart={jwtDetails.payload} />
-      <h4>Signature</h4>
+      <h5>Signature</h5>
       <JWTDetailPart jwtPart={jwtDetails.signature} />
       <JWTDescription />
     </div>
