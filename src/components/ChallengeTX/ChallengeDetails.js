@@ -7,7 +7,6 @@ import FirstOperation from '../TXDetails/FirstOperation'
 import WebAuthDomainOperation from '../TXDetails/WebAuthDomainOperation'
 import OtherOperations from '../TXDetails/OtherOperations'
 import ClientDomainOperation from '../TXDetails/ClientDomainOperation'
-import ChallengeDescription from './ChallengeDescription'
 
 export default function ChallengeDetails(props) {
   let xdr = props.xdr
@@ -32,7 +31,7 @@ export default function ChallengeDetails(props) {
   let cdOperation = operations.find(item => item.name === 'client_domain')
 
   return (
-    <div className="col-8">
+    <div>
       <h3>Challenge Transaction Details</h3>
       <p>Here are the details of the transaction, as well as what the client is intended to be checking to make sure the transaction has been properly created.</p>
       { seqNumber ? <SequenceNumber seqNumber={seqNumber} /> : null }
@@ -41,7 +40,6 @@ export default function ChallengeDetails(props) {
       { wadOperation ? <WebAuthDomainOperation operation={wadOperation} serverKey={toml.SIGNING_KEY} anchor={props.anchor} /> : null }
       { otherOperations ? <OtherOperations operations={otherOperations} /> : null }
       { cdOperation ? <ClientDomainOperation operation={cdOperation} /> : null }
-      <ChallengeDescription />
     </div>
   )
 }

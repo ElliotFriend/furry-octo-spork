@@ -3,13 +3,13 @@ import React from 'react'
 export default function JWTDescription() {
   return (
     <div className="accordion" id="accordionJWT">
-      <div className="accordion-item row justify-content-center">
+      <div className="accordion-item justify-content-center">
         <h2 className="accordion-header" id="jwtAccordionHeading">
-          <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJWT" aria-expanded="true" aria-controls="collapseJWT">
+          <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJWT" aria-expanded="true" aria-controls="collapseJWT">
             What am I looking at?!
           </button>
         </h2>
-        <div id="collapseJWT" className="accordion-collapse collapse" aria-labelledby="jwtAccordionHeading" data-bs-parent="#accordionJWT">
+        <div id="collapseJWT" className="accordion-collapse collapse show" aria-labelledby="jwtAccordionHeading" data-bs-parent="#accordionJWT">
           <div className="accordion-body">
             <p>I know, these things can be confusing. You can find out a bunch more at <strong><a href="https://jwt.io">jwt.io</a></strong> or in the official <strong><a href="https://datatracker.ietf.org/doc/html/rfc7519">RFC 7519</a></strong> paper.</p>
             <p>If you're short on time, below is a rundown of some of the basics of JWT terminology.</p>
@@ -18,7 +18,7 @@ export default function JWTDescription() {
                 <dt className="col-12 h5">Header</dt>
                 <dd className="col-12">Every JWT carries a header with claims about itself. These claims establish the algorithms used, whether the JWT is signed or encrypted, and in general, how to parse the rest of the JWT.</dd>
                 <dt className="col-3">typ</dt>
-                <dd className="col-9">The <u>type</u> of token you're looking at</dd>
+                <dd className="col-9">(Required) The <u>type</u> of token you're looking at</dd>
                 <dt className="col-3">alg</dt>
                 <dd className="col-9">The signature or encryption <u>algorithm</u></dd>
                 <dt className="col-3">cty</dt>
@@ -36,7 +36,7 @@ export default function JWTDescription() {
                 <dt className="col-3">jti</dt>
                 <dd className="col-9"><u>JWT ID</u> or a unique identifier for this token</dd>
                 <dt className="col-3">client_domain</dt>
-                <dd className="col-9">(Optional). This nonstandard JWT claim contains the client home domain. This claim is included if the challenge transaction contained a <code>client_domain</code></dd>
+                <dd className="col-9">(Optional) This nonstandard JWT claim contains the client home domain. This claim is included if the challenge transaction contained a <code>client_domain</code></dd>
                 <dt className="col-12 h5">Signature</dt>
                 <dd className="col-12">The purpose of a signature is to allow one or more parties to establish the authenticity of the JWT. Authenticity in this context means the data contained in the JWT has not been tampered with. In other words, any party that can perform a signature check can rely on the contents provided by the JWT.</dd>
               </dl>

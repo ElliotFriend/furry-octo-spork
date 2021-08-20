@@ -13,3 +13,8 @@ dd.col-9 {
 .nested-list li {
   margin-bottom: inherit;
 }
+
+#challenge pre {
+  margin-bottom: 0;
+  padding-top: 0.125rem;
+}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './JWTDetails.css';
 import JWTDetailPart from './JWTDetailPart';
-import JWTDescription from './JWTDescription'
 
 export default function JWTDetails(props) {
   let [jwtDetails, setJwtDetails] = useState({
@@ -32,7 +31,6 @@ export default function JWTDetails(props) {
       <JWTDetailPart jwtPart={jwtDetails.payload} />
       <h5>Signature</h5>
       <JWTDetailPart jwtPart={jwtDetails.signature} />
-      <JWTDescription />
     </div>
   )
 }

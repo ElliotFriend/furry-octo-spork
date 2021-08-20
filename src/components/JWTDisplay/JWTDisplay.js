@@ -7,7 +7,7 @@ export default function JWTDisplay(props) {
   return (
     <div class="container tab-pane fade" id="jwt" role="tabpanel" aria-labelledby="jwt-tab">
       <div className="row">
-        <div className="col-4">
+        <div className="col-12 col-lg-4 mb-4">
           <h1>Here it is!</h1>
           <p>Here's your very own JSON Web Token! You can use this token to authenticate with other SEP endpoints and servers. You can also check out the details of what your JWT contains.</p>
           <h3>JSON Web Token</h3>
@@ -15,8 +15,9 @@ export default function JWTDisplay(props) {
             {props.jwt}
           </pre>
         </div>
-        <div className="col-8">
-          <JWTDetails jwt={props.jwt} />
+        <div className="col-12 col-lg-8">
+          { props.jwt ? <JWTDetails jwt={props.jwt} /> : null }
+          <JWTDescription />
         </div>
       </div>
     </div>

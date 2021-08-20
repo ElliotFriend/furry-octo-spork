@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ChallengeTX.css';
 import { TransactionBuilder, Keypair } from 'stellar-sdk';
 import ChallengeDetails from './ChallengeDetails'
+import ChallengeDescription from './ChallengeDescription'
 
 export default function ChallengeTX(props) {
   // testnet account
@@ -44,7 +45,7 @@ export default function ChallengeTX(props) {
   return (
     <div className="container tab-pane fade" id="challenge" role="tabpanel" aria-labelledby="challenge-tab">
       <div className="row">
-        <div className="col-4">
+        <div className="col-12 col-lg-4 mb-4">
           <h1>Way to go!</h1>
           <p>Now, let's take a look at what we got from the server. You can see the XDR formatted challenge transaction, and the details of that transaction here. When you're comfortable that everything appears to be in order, enter your Stellar secret key below to send the signed transaction to the server, so you can receive your JWT.</p>
           <h3>Challenge Transaction XDR</h3>
@@ -57,10 +58,16 @@ export default function ChallengeTX(props) {
           </div>
           <button onClick={signTransaction} className="btn btn-primary">Authenticate with Server</button>
         </div>
-        <ChallengeDetails pubkey={props.pubkey}
-                          anchor={props.anchor}
-                          xdr={props.xdr}
-                          toml={props.toml} />
+        <div className="col-12 col-lg-8">
+          { props.xdr
+              ? <ChallengeDetails pubkey={props.pubkey}
+                                  anchor={props.anchor}
+                                  xdr={props.xdr}
+                                  toml={props.toml} />
+              : null
+          }
+          <ChallengeDescription />
+        </div>
       </div>
     </div>
   )

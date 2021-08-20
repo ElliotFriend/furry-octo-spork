@@ -10,3 +10,9 @@ dd.col-9 {
 [aria-expanded="true"] > .collapsed {
   display: none;
 }
+
+
+#jwt pre {
+  margin-bottom: 0;
+  padding-top: 0.125rem;
+}

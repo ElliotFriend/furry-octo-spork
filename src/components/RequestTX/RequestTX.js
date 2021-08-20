@@ -39,14 +39,7 @@ export default function RequestTX(props) {
   return (
     <div className="container tab-pane fade show active" id="request" role="tabpanel" aria-labelledby="request-tab">
       <div className="row">
-        <div className="col">
-          <h1>Welcome!</h1>
-          <p className="lead">Your journey to JWT enlightenment begins now</p>
-          <p>The first thing you'll need to do is request a "challenge transaction" from a SEP-0010 endpoint. Often these are asset anchors. If you don't know which one to use, I suggest you start with the <abbr title="Stellar Development Foundation" className="initialism">SDF</abbr> testanchor.</p>
-          <p>This challenge transaction will be generated for a specific stellar account. In the next step, you'll need to sign this transaction, so enter a public key to an account you can sign for. You will be asked to sign with your secret key in the next step.</p>
-          <p className="small"><em>Note: This account does not need to be funded on the blockchain in order for a valid JWT to be issued.</em></p>
-        </div>
-        <div className="col">
+        <div className="col-12 col-lg-4 order-last order-lg-first">
           <h3>Request Challenge Transaction</h3>
           <form>
             <div className="mb-3">
@@ -59,6 +52,13 @@ export default function RequestTX(props) {
             </div>
             <button onClick={parseTomlFile} className="btn btn-primary">Request Challenge Transaction</button>
           </form>
+        </div>
+        <div className="col-12 col-lg-8 order-first order-lg-last mb-4">
+          <h1>Welcome!</h1>
+          <p className="lead">Your journey to JWT enlightenment begins now</p>
+          <p>The first thing you'll need to do is request a "challenge transaction" from a SEP-0010 endpoint. Often these are asset anchors. If you don't know which one to use, I suggest you start with the <abbr title="Stellar Development Foundation" className="initialism">SDF</abbr> testanchor.</p>
+          <p>This challenge transaction will be generated for a specific stellar account. In the next step, you'll need to sign this transaction, so enter a public key to an account you can sign for. You will be asked to sign with your secret key in the next step.</p>
+          <p className="small"><em>Note: This account does not need to be funded on the blockchain in order for a valid JWT to be issued.</em></p>
         </div>
       </div>
     </div>
