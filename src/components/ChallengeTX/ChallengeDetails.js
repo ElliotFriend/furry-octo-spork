@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Utils } from 'stellar-sdk';
+import { Utils, TransactionBuilder, Networks } from 'stellar-sdk';
 import './ChallengeTX.css'
 import SequenceNumber from '../TXDetails/SequenceNumber'
 import SignedByServer from '../TXDetails/SignedByServer'
@@ -17,17 +17,22 @@ export default function ChallengeDetails(props) {
 
   useEffect(() => {
     if (xdr && toml) {
-      let challengeTransaction = Utils.readChallengeTx(xdr, toml.SIGNING_KEY, toml.NETWORK_PASSPHRASE, props.anchor, props.anchor);
-      setSeqNumber(challengeTransaction.tx._sequence)
-      if (Utils.verifyTxSignedBy(challengeTransaction.tx, toml.SIGNING_KEY)) {
-        setSignedBy(Utils.gatherTxSigners(challengeTransaction.tx, [toml.SIGNING_KEY]))
+      // let challengeTransaction = Utils.readChallengeTx(xdr, toml.SIGNING_KEY, toml.NETWORK_PASSPHRASE, props.anchor, props.anchor);
+      let challengeTransaction = TransactionBuilder.fromXDR(xdr, Networks.TESTNET)
+      // console.log(challengeTransaction)
+      setSeqNumber(challengeTransaction._sequence)
+      if (Utils.verifyTxSignedBy(challengeTransaction, toml.SIGNING_KEY)) {
+        // console.log('here')
+        setSignedBy(Utils.gatherTxSigners(challengeTransaction, [toml.SIGNING_KEY]))
       }
-      setOperations(challengeTransaction.tx._operations)
+      setOperations(challengeTransaction._operations)
     }
   }, [xdr])
 
   let wadOperation = operations.find(item => item.name === 'web_auth_domain')
-  let otherOperations = operations.find(item => item.name !== 'web_auth_domain' && item.name !== `${props.anchor} auth`)
+  let otherOperations = operations.find(item => item.name !== 'web_auth_domain'
+                                        && item.name !== `${props.anchor} auth`
+                                        && item.name !== 'client_domain')
   let cdOperation = operations.find(item => item.name === 'client_domain')
 
   return (
@@ -38,8 +43,8 @@ export default function ChallengeDetails(props) {
       { signedBy ? <SignedByServer signedBy={signedBy} serverKey={toml.SIGNING_KEY} /> : null }
       { operations.length > 0 ? <FirstOperation operation={operations[0]} pubkey={props.pubkey} anchor={props.anchor} /> : null }
       { wadOperation ? <WebAuthDomainOperation operation={wadOperation} serverKey={toml.SIGNING_KEY} anchor={props.anchor} /> : null }
+      { cdOperation ? <ClientDomainOperation operation={cdOperation} client={props.client} clientKey={props.clientKey} /> : null }
       { otherOperations ? <OtherOperations operations={otherOperations} /> : null }
-      { cdOperation ? <ClientDomainOperation operation={cdOperation} /> : null }
     </div>
   )
 }

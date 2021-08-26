@@ -49,7 +49,14 @@ export default function ChallengeTX(props) {
           <h1>Way to go!</h1>
           <p>Now, let's take a look at what we got from the server. You can see the XDR formatted challenge transaction, and the details of that transaction here. When you're comfortable that everything appears to be in order, enter your Stellar secret key below to send the signed transaction to the server, so you can receive your JWT.</p>
           <h3>Challenge Transaction XDR</h3>
-          <pre className="px-3 user-select-all text-break text-wrap">
+          {
+            props.client === ""
+            ? null
+            : props.client === "sep10-client.elliotfriend.com"
+            ? <p><small><em>Note: You have used <code>sep10-client.elliotfriend.com</code> as your <code>client_domain</code>. The XDR below has already been signed by the necessary signing key.</em></small></p>
+            : <p><small><em>Note: You have used a <code>client_domain</code>, and you must get the required signature yourself and copy/paste the resulting XDR below.</em></small></p>
+          }
+          <pre className="px-3 user-select-all text-break text-wrap mb-3">
             {xdr}
           </pre>
           <div className="mb-3">
@@ -62,6 +69,8 @@ export default function ChallengeTX(props) {
           { props.xdr
               ? <ChallengeDetails pubkey={props.pubkey}
                                   anchor={props.anchor}
+                                  client={props.client}
+                                  clientKey={props.clientKey}
                                   xdr={props.xdr}
                                   toml={props.toml} />
               : null

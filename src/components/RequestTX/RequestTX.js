@@ -1,12 +1,16 @@
 import React from 'react';
 import './RequestTX.css';
-import { StellarTomlResolver } from 'stellar-sdk';
+import { StellarTomlResolver, TransactionBuilder, Keypair, Server } from 'stellar-sdk';
+const tomlParser = require('toml')
 
 export default function RequestTX(props) {
   // testnet account
   // GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK
   // SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS
-
+  //
+  // testnet account for sep10-client.elliotfriend.com client_domain key
+  // GDS74NMTJJPQWIU7RDZ3H3OCQ4U5754BSDQPIEXY6URDXWUV6KPKINH4
+  // SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST
   const handlePubkeyChange = (e) => {
     props.setPubkey(e.target.value)
   }
@@ -15,8 +19,14 @@ export default function RequestTX(props) {
     props.setAnchor(e.target.value)
   }
 
+  const handleClientChange = (e) => {
+    props.setClient(e.target.value)
+  }
+
   const requestTransaction = async (endpoint) => {
-    let res = await fetch(`${endpoint}?account=${props.pubkey}`, {
+    let endpointURL = `${endpoint}?account=${props.pubkey}`
+    if (props.client) { endpointURL += `&client_domain=${props.client}` }
+    let res = await fetch(endpointURL, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -24,12 +34,31 @@ export default function RequestTX(props) {
       }
     })
     let json = await res.json()
+    console.log(json)
     let transaction = json.transaction
+    if (props.client === "sep10-client.elliotfriend.com") {
+      let skp = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
+      let tx = TransactionBuilder.fromXDR(transaction, json.network_passphrase)
+      tx.sign(skp)
+      transaction = tx.toXDR()
+    }
     props.setXDR(transaction)
+  }
+
+  const getClientSigningKey = async (domain) => {
+    // let clientToml = await StellarTomlResolver.resolve(domain)
+    let clientToml = await fetch(`https://${domain}/.well-known/stellar.toml`)
+    let toml = await clientToml.text()
+    let parsed = tomlParser.parse(toml)
+    return parsed.SIGNING_KEY
   }
 
   const parseTomlFile = async (e) => {
     e.preventDefault()
+    if (props.client) {
+      let clientKey = await getClientSigningKey(props.client)
+      await props.setClientKey(clientKey)
+    }
     let stellarToml = await StellarTomlResolver.resolve(props.anchor)
     await props.setToml(stellarToml)
     await requestTransaction(stellarToml.WEB_AUTH_ENDPOINT)
@@ -50,6 +79,10 @@ export default function RequestTX(props) {
               <label htmlFor="anchorURL" className="form-label">Anchor URL</label>
               <input onChange={handleAnchorChange} type="url" name="anchorURL" className="text-center form-control" id="anchorURL" placeholder={props.anchor} />
             </div>
+            <div className="mb-3">
+              <label htmlFor="clientDomain" className="form-label">Client Domain (Optional)</label>
+              <input onChange={handleClientChange} type="url" name="clientDomain" className="text-center form-control" id="clientDomain" />
+            </div>
             <button onClick={parseTomlFile} className="btn btn-primary">Request Challenge Transaction</button>
           </form>
         </div>
@@ -59,6 +92,7 @@ export default function RequestTX(props) {
           <p>The first thing you'll need to do is request a "challenge transaction" from a SEP-0010 endpoint. Often these are asset anchors. If you don't know which one to use, I suggest you start with the <abbr title="Stellar Development Foundation" className="initialism">SDF</abbr> testanchor.</p>
           <p>This challenge transaction will be generated for a specific stellar account. In the next step, you'll need to sign this transaction, so enter a public key to an account you can sign for. You will be asked to sign with your secret key in the next step.</p>
           <p className="small"><em>Note: This account does not need to be funded on the blockchain in order for a valid JWT to be issued.</em></p>
+          <p className="small"><em>Another Note: If you would like to test this client with a <code>client_domain</code> field, you are welcome to use <code>sep10-client.elliotfriend.com</code> on the testnet.</em></p>
         </div>
       </div>
     </div>
