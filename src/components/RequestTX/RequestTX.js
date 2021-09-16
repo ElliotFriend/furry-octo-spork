@@ -1,7 +1,8 @@
 import React from 'react';
 import './RequestTX.css';
 import { StellarTomlResolver, TransactionBuilder, Keypair, Server } from 'stellar-sdk';
-const tomlParser = require('toml')
+import Error from '../../Error'
+
 
 export default function RequestTX(props) {
   // testnet account
@@ -38,25 +39,28 @@ export default function RequestTX(props) {
         'Content-Type': 'application/json'
       }
     })
-    let json = await res.json()
-    // console.log(json.error)
-    // TODO: Throw the error, and display an alert to the user if something has gone wrong.
-    let transaction = json.transaction
-    if (props.client === "sep10-client.elliotfriend.com") {
-      let skp = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
-      let tx = TransactionBuilder.fromXDR(transaction, json.network_passphrase)
-      tx.sign(skp)
-      transaction = tx.toXDR()
+    if (!res.ok) {
+      // console.log(res)
+      let json = await res.json()
+      await props.setError(json.error)
+    } else {
+      let json = await res.json()
+      // console.log(json.error)
+      // TODO: Throw the error, and display an alert to the user if something has gone wrong.
+      let transaction = json.transaction
+      if (props.client === "sep10-client.elliotfriend.com") {
+        let skp = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
+        let tx = TransactionBuilder.fromXDR(transaction, json.network_passphrase)
+        tx.sign(skp)
+        transaction = tx.toXDR()
+      }
+      props.setXDR(transaction)
     }
-    props.setXDR(transaction)
   }
 
   const getClientSigningKey = async (domain) => {
-    // let clientToml = await StellarTomlResolver.resolve(domain)
-    let clientToml = await fetch(`https://${domain}/.well-known/stellar.toml`)
-    let toml = await clientToml.text()
-    let parsed = tomlParser.parse(toml)
-    return parsed.SIGNING_KEY
+    let clientToml = await StellarTomlResolver.resolve(domain)
+    return clientToml.SIGNING_KEY
   }
 
   const parseTomlFile = async (e) => {
@@ -73,6 +77,7 @@ export default function RequestTX(props) {
 
   return (
     <div className="container tab-pane fade show active" id="request" role="tabpanel" aria-labelledby="request-tab">
+      { !props.error ? null : <Error message={props.error} /> }
       <div className="row">
         <div className="col-12 col-lg-4 order-last order-lg-first">
           <h3>Request Challenge Transaction</h3>

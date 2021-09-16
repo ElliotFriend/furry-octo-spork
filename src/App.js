@@ -8,6 +8,7 @@ import JWTDetails from './components/JWTDetails/JWTDetails';
 
 
 function App() {
+  let [error, setError] = useState('')
   let [pubkey, setPubkey] = useState('GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK')
   let [homeDomain, setHomeDomain] = useState('testanchor.stellar.org')
   let [otherHomeDomain, setOtherHomeDomain] = useState('')
@@ -20,14 +21,16 @@ function App() {
   return (
     <div className="App flex-shrink-0">
       <div className="py-5 container tab-content" id="myTabContent">
-        <RequestTX pubkey={pubkey} setPubkey={setPubkey}
+        <RequestTX error={error} setError={setError}
+                   pubkey={pubkey} setPubkey={setPubkey}
                    homeDomain={homeDomain} setHomeDomain={setHomeDomain}
                    otherHomeDomain={otherHomeDomain} setOtherHomeDomain={setOtherHomeDomain}
                    client={client} setClient={setClient}
                    setClientKey={setClientKey}
                    setToml={setToml}
                    setXDR={setXDR} />
-        <ChallengeTX pubkey={pubkey}
+        <ChallengeTX error={error} setError={setError}
+                     pubkey={pubkey}
                      homeDomain={homeDomain}
                      otherHomeDomain={otherHomeDomain}
                      client={client}
@@ -35,7 +38,8 @@ function App() {
                      toml={toml}
                      xdr={xdr}
                      setJWT={setJWT} />
-        <JWTDisplay jwt={jwt} />
+        <JWTDisplay error={error} setError={setError}
+                    jwt={jwt} />
       </div>
     </div>
   );
