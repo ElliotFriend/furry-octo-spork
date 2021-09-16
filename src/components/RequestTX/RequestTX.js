@@ -15,8 +15,12 @@ export default function RequestTX(props) {
     props.setPubkey(e.target.value)
   }
 
-  const handleAnchorChange = (e) => {
-    props.setAnchor(e.target.value)
+  const handleHomeDomainChange = (e) => {
+    props.setHomeDomain(e.target.value)
+  }
+
+  const handleOtherHomeDomainChange = (e) => {
+    props.setOtherHomeDomain(e.target.value)
   }
 
   const handleClientChange = (e) => {
@@ -26,6 +30,7 @@ export default function RequestTX(props) {
   const requestTransaction = async (endpoint) => {
     let endpointURL = `${endpoint}?account=${props.pubkey}`
     if (props.client) { endpointURL += `&client_domain=${props.client}` }
+    if (props.otherHomeDomain) { endpointURL += `&home_domain=${props.otherHomeDomain}`}
     let res = await fetch(endpointURL, {
       method: 'GET',
       mode: 'cors',
@@ -34,7 +39,8 @@ export default function RequestTX(props) {
       }
     })
     let json = await res.json()
-    console.log(json)
+    // console.log(json.error)
+    // TODO: Throw the error, and display an alert to the user if something has gone wrong.
     let transaction = json.transaction
     if (props.client === "sep10-client.elliotfriend.com") {
       let skp = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
@@ -59,7 +65,7 @@ export default function RequestTX(props) {
       let clientKey = await getClientSigningKey(props.client)
       await props.setClientKey(clientKey)
     }
-    let stellarToml = await StellarTomlResolver.resolve(props.anchor)
+    let stellarToml = await StellarTomlResolver.resolve(props.homeDomain)
     await props.setToml(stellarToml)
     await requestTransaction(stellarToml.WEB_AUTH_ENDPOINT)
     document.querySelector('#challenge-tab').click()
@@ -76,8 +82,13 @@ export default function RequestTX(props) {
               <input onChange={handlePubkeyChange} type="text" name="publicKey" className="text-center form-control" id="publicKey" placeholder={props.pubkey} />
             </div>
             <div className="mb-3">
-              <label htmlFor="anchorURL" className="form-label">Anchor URL</label>
-              <input onChange={handleAnchorChange} type="url" name="anchorURL" className="text-center form-control" id="anchorURL" placeholder={props.anchor} />
+              <label htmlFor="homeDomainURL" className="form-label">Home Domain URL</label>
+              <input onChange={handleHomeDomainChange} type="url" name="homeDomainURL" className="text-center form-control" id="homeDomainURL" placeholder={props.homeDomain} />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="otherHomeDomainURL" className="form-label">Custom <code>home_domain</code> (Optional)</label>
+              <p className="small">Unless you know what you're doing (and why), you probably want to leave this empty.</p>
+              <input onChange={handleOtherHomeDomainChange} type="url" name="otherHomeDomainURL" className="text-center form-control" id="otherHomeDomainURL" placeholder={props.otherHomeDomain} />
             </div>
             <div className="mb-3">
               <label htmlFor="clientDomain" className="form-label">Client Domain (Optional)</label>

@@ -12,7 +12,7 @@ export default function WebAuthDomainOperation(props) {
           operation.source === props.serverKey &&
           operation.name === 'web_auth_domain' &&
           operation.value.length <= 64 &&
-          Buffer.from(operation.value).toString() === props.anchor
+          Buffer.from(operation.value).toString() === props.homeDomain
             ? <SuccessIcon />
             : <FailIcon />
         }

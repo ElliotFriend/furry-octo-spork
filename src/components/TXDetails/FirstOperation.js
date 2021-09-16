@@ -10,7 +10,7 @@ export default function FirstOperation(props) {
         { !operation ? null :
           operation.type === "manageData" &&
           operation.source === props.pubkey &&
-          operation.name === `${props.anchor} auth` &&
+          operation.name === `${props.homeDomain} auth` &&
           operation.value.length === 64
             ? <SuccessIcon />
             : <FailIcon />

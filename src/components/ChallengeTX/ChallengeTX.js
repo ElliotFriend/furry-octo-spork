@@ -68,7 +68,8 @@ export default function ChallengeTX(props) {
         <div className="col-12 col-lg-8">
           { props.xdr
               ? <ChallengeDetails pubkey={props.pubkey}
-                                  anchor={props.anchor}
+                                  homeDomain={props.homeDomain}
+                                  otherHomeDomain={props.otherHomeDomain}
                                   client={props.client}
                                   clientKey={props.clientKey}
                                   xdr={props.xdr}

@@ -9,7 +9,8 @@ import JWTDetails from './components/JWTDetails/JWTDetails';
 
 function App() {
   let [pubkey, setPubkey] = useState('GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK')
-  let [anchor, setAnchor] = useState('testanchor.stellar.org')
+  let [homeDomain, setHomeDomain] = useState('testanchor.stellar.org')
+  let [otherHomeDomain, setOtherHomeDomain] = useState('')
   let [client, setClient] = useState('')
   let [clientKey, setClientKey] = useState('')
   let [toml, setToml] = useState()
@@ -17,16 +18,18 @@ function App() {
   let [jwt, setJWT] = useState('')
 
   return (
-    <div className="App">
-      <div className="py-5 mb-5 container tab-content" id="myTabContent">
+    <div className="App flex-shrink-0">
+      <div className="py-5 container tab-content" id="myTabContent">
         <RequestTX pubkey={pubkey} setPubkey={setPubkey}
-                   anchor={anchor} setAnchor={setAnchor}
+                   homeDomain={homeDomain} setHomeDomain={setHomeDomain}
+                   otherHomeDomain={otherHomeDomain} setOtherHomeDomain={setOtherHomeDomain}
                    client={client} setClient={setClient}
                    setClientKey={setClientKey}
                    setToml={setToml}
                    setXDR={setXDR} />
         <ChallengeTX pubkey={pubkey}
-                     anchor={anchor}
+                     homeDomain={homeDomain}
+                     otherHomeDomain={otherHomeDomain}
                      client={client}
                      clientKey={clientKey}
                      toml={toml}
