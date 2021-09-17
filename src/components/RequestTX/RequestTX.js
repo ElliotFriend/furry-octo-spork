@@ -40,13 +40,10 @@ export default function RequestTX(props) {
       }
     })
     if (!res.ok) {
-      // console.log(res)
       let json = await res.json()
-      await props.setError(json.error)
+      throw json.error
     } else {
       let json = await res.json()
-      // console.log(json.error)
-      // TODO: Throw the error, and display an alert to the user if something has gone wrong.
       let transaction = json.transaction
       if (props.client === "sep10-client.elliotfriend.com") {
         let skp = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
@@ -59,25 +56,37 @@ export default function RequestTX(props) {
   }
 
   const getClientSigningKey = async (domain) => {
-    let clientToml = await StellarTomlResolver.resolve(domain)
-    return clientToml.SIGNING_KEY
+    try {
+      let clientToml = await StellarTomlResolver.resolve(domain)
+      return clientToml.SIGNING_KEY
+    }
+    catch (error) {
+      if (error.toJSON().message === 'Network Error') {
+        throw 'A network error has occurred while retrieving the signing key for the specified `client_domain`.'
+      }
+    }
   }
 
   const parseTomlFile = async (e) => {
     e.preventDefault()
-    if (props.client) {
-      let clientKey = await getClientSigningKey(props.client)
-      await props.setClientKey(clientKey)
+    props.setError('')
+    try {
+      if (props.client) {
+        let clientKey = await getClientSigningKey(props.client)
+        await props.setClientKey(clientKey)
+      }
+      let stellarToml = await StellarTomlResolver.resolve(props.homeDomain)
+      await props.setToml(stellarToml)
+      await requestTransaction(stellarToml.WEB_AUTH_ENDPOINT)
+      document.querySelector('#challenge-tab').click()
     }
-    let stellarToml = await StellarTomlResolver.resolve(props.homeDomain)
-    await props.setToml(stellarToml)
-    await requestTransaction(stellarToml.WEB_AUTH_ENDPOINT)
-    document.querySelector('#challenge-tab').click()
+    catch (error) {
+      props.setError(error)
+    }
   }
 
   return (
     <div className="container tab-pane fade show active" id="request" role="tabpanel" aria-labelledby="request-tab">
-      { !props.error ? null : <Error message={props.error} /> }
       <div className="row">
         <div className="col-12 col-lg-4 order-last order-lg-first">
           <h3>Request Challenge Transaction</h3>

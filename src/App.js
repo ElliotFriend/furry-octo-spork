@@ -5,6 +5,7 @@ import RequestTX from './components/RequestTX/RequestTX';
 import ChallengeTX from './components/ChallengeTX/ChallengeTX';
 import JWTDisplay from './components/JWTDisplay/JWTDisplay';
 import JWTDetails from './components/JWTDetails/JWTDetails';
+import Error from './Error'
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
   return (
     <div className="App flex-shrink-0">
       <div className="py-5 container tab-content" id="myTabContent">
+        { !error ? null : <Error message={error} /> }
         <RequestTX error={error} setError={setError}
                    pubkey={pubkey} setPubkey={setPubkey}
                    homeDomain={homeDomain} setHomeDomain={setHomeDomain}

@@ -3,6 +3,7 @@ import './ChallengeTX.css';
 import { TransactionBuilder, Keypair } from 'stellar-sdk';
 import ChallengeDetails from './ChallengeDetails'
 import ChallengeDescription from './ChallengeDescription'
+import Error from '../../Error'
 
 export default function ChallengeTX(props) {
   // testnet account
@@ -18,12 +19,18 @@ export default function ChallengeTX(props) {
 
   const signTransaction = async () => {
     if (xdr && secretKey) {
-      let kp = Keypair.fromSecret(secretKey)
-      let transaction = TransactionBuilder.fromXDR(xdr, toml.NETWORK_PASSPHRASE)
-      transaction.sign(kp)
-      let jwt = await submitTransaction(transaction.toXDR())
-      await props.setJWT(jwt)
-      document.querySelector("#jwt-tab").click()
+      props.setError('')
+      try {
+        let kp = Keypair.fromSecret(secretKey)
+        let transaction = TransactionBuilder.fromXDR(xdr, toml.NETWORK_PASSPHRASE)
+        transaction.sign(kp)
+        let jwt = await submitTransaction(transaction.toXDR())
+        await props.setJWT(jwt)
+        document.querySelector("#jwt-tab").click()
+      }
+      catch (error) {
+        props.setError(error)
+      }
     }
   }
 
@@ -39,6 +46,9 @@ export default function ChallengeTX(props) {
       })
     })
     let json = await res.json()
+    if (!res.ok) {
+      throw json.error
+    }
     return json.token
   }
 
