@@ -4,8 +4,8 @@ import './Header.css'
 export default function Header() {
   return (
     <nav className="navbar navbar-light pt-3 bg-light pb-0">
-      <div className="container">
-        <ul className="nav nav-tabs justify-content-start border-0 align-self-end" id="myTab" role="tablist">
+      <div className="container justify-content-center justify-content-lg-between">
+        <ul className="nav nav-tabs border-0 align-self-end order-3 order-lg-1" id="myTab" role="tablist">
           <li className="nav-item" role="presentation">
             <button className="nav-link active" id="request-tab" data-bs-toggle="tab" data-bs-target="#request" type="button" role="tab" aria-controls="request" aria-selected="true">
               1. Request Challenge TX
@@ -22,7 +22,7 @@ export default function Header() {
             </button>
           </li>
         </ul>
-        <ul className="nav justify-content-end mb-3">
+        <ul className="nav mb-3 order-2">
           <li className="nav-item">
             <div className="btn-group">
               <button className="btn btn-primary dropdown-toggle font-monospace" data-bs-toggle="dropdown" aria-expanded="false" id="moreInfoDropdown">More Info</button>
