@@ -17,6 +17,15 @@ export default function ChallengeTX(props) {
     setSecretKey(e.target.value)
   }
 
+  const handleXdrChange = (e) => {
+    props.setXDR(e.target.value)
+  }
+
+  const selectXdrText = () => {
+    let obj = document.getElementById('challengeXDRTextarea')
+    obj.select()
+  }
+
   const signTransaction = async () => {
     if (xdr && secretKey) {
       props.setError('')
@@ -29,7 +38,7 @@ export default function ChallengeTX(props) {
         document.querySelector("#jwt-tab").click()
       }
       catch (error) {
-        props.setError(error)
+        props.setError(error.toString())
       }
     }
   }
@@ -66,9 +75,7 @@ export default function ChallengeTX(props) {
             ? <p><small><em>Note: You have used <code>sep10-client.elliotfriend.com</code> as your <code>client_domain</code>. The XDR below has already been signed by the necessary signing key.</em></small></p>
             : <p><small><em>Note: You have used a <code>client_domain</code>, and you must get the required signature yourself and copy/paste the resulting XDR below.</em></small></p>
           }
-          <pre className="px-3 user-select-all text-break text-wrap mb-3">
-            {xdr}
-          </pre>
+          <textarea id="challengeXDRTextarea" onChange={handleXdrChange} onFocus={selectXdrText} className="px-3 text-break text-wrap mb-3 bg-light border-0 font-monospace" value={xdr} rows="15" style={{width: "100%"}} />
           <div className="mb-3">
             <label htmlFor="secretKey" className="form-label">Secret Key</label>
             <input onChange={handleChange} type="password" className="text-center form-control" id="secretKey" name="secretKey" />

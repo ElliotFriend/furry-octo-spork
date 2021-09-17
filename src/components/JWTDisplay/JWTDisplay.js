@@ -11,7 +11,7 @@ export default function JWTDisplay(props) {
           <h1>Wow!</h1>
           <p>Here's your very own JSON Web Token! You can use this token to authenticate with other SEP endpoints and servers. You can also check out the details of what your JWT contains.</p>
           <h3>JSON Web Token</h3>
-          <pre className="bg-light user-select-all text-break text-wrap">
+          <pre className="p-2 bg-light user-select-all text-break text-wrap">
             {props.jwt}
           </pre>
         </div>

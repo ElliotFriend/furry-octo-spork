@@ -101,8 +101,8 @@ export default function RequestTX(props) {
             </div>
             <div className="mb-3">
               <label htmlFor="otherHomeDomainURL" className="form-label">Custom <code>home_domain</code> (Optional)</label>
-              <p className="small">Unless you know what you're doing (and why), you probably want to leave this empty.</p>
               <input onChange={handleOtherHomeDomainChange} type="url" name="otherHomeDomainURL" className="text-center form-control" id="otherHomeDomainURL" placeholder={props.otherHomeDomain} />
+              <div className="form-text">Unless you know what you're doing (and why), you probably want to leave this empty.</div>
             </div>
             <div className="mb-3">
               <label htmlFor="clientDomain" className="form-label">Client Domain (Optional)</label>

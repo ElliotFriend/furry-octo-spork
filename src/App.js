@@ -38,7 +38,7 @@ function App() {
                      client={client}
                      clientKey={clientKey}
                      toml={toml}
-                     xdr={xdr}
+                     xdr={xdr} setXDR={setXDR}
                      setJWT={setJWT} />
         <JWTDisplay error={error} setError={setError}
                     jwt={jwt} />

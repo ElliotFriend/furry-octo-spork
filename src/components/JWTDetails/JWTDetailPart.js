@@ -23,7 +23,7 @@ export default function JWTDetailPart(props) {
 
   let jwtPart = props.jwtPart
   let sigPart = typeof jwtPart === "string"
-    ? <div className="row">
+    ? <div className="row mb-3">
         <div className="col">
           {jwtPart}
         </div>

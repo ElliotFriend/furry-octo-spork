@@ -1,11 +1,3 @@
-dt.col-3 {
-  text-align: right;
-}
-
-dd.col-9 {
-  text-align: left;
-}
-
 .accordion-body li {
   margin-bottom: 1rem;
 }
@@ -17,4 +9,10 @@ dd.col-9 {
 #challenge pre {
   margin-bottom: 0;
   padding-top: 0.125rem;
+}
+
+#challenge textarea {
+  -webkit-user-select: all; /* Safari */
+  -ms-user-select: all; /* IE 10 and IE 11 */
+  user-select: all; /* Standard syntax */
 }
