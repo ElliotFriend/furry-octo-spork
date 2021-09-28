@@ -2,9 +2,12 @@ import React from 'react';
 import './RequestTX.css';
 import { StellarTomlResolver, TransactionBuilder, Keypair, Server } from 'stellar-sdk';
 import Error from '../../Error'
+import requestChallengeTx from '../../lib/requestChallengeTx'
+import getClientDomainSigningKey from '../../lib/getClientDomainSigningKey'
+import signChallengeTx from '../../lib/signChallengeTx'
 
 
-export default function RequestTX(props) {
+const RequestTX = (props) => {
   // testnet account
   // GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK
   // SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS
@@ -28,60 +31,38 @@ export default function RequestTX(props) {
     props.setClient(e.target.value)
   }
 
-  const requestTransaction = async (endpoint) => {
-    let endpointURL = `${endpoint}?account=${props.pubkey}`
-    if (props.client) { endpointURL += `&client_domain=${props.client}` }
-    if (props.otherHomeDomain) { endpointURL += `&home_domain=${props.otherHomeDomain}`}
-    let res = await fetch(endpointURL, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    if (!res.ok) {
-      let json = await res.json()
-      throw json.error
-    } else {
-      let json = await res.json()
-      let transaction = json.transaction
-      if (props.client === "sep10-client.elliotfriend.com") {
-        let skp = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
-        let tx = TransactionBuilder.fromXDR(transaction, json.network_passphrase)
-        tx.sign(skp)
-        transaction = tx.toXDR()
-      }
-      props.setXDR(transaction)
-    }
-  }
-
-  const getClientSigningKey = async (domain) => {
-    try {
-      let clientToml = await StellarTomlResolver.resolve(domain)
-      return clientToml.SIGNING_KEY
-    }
-    catch (error) {
-      if (error.toJSON().message === 'Network Error') {
-        throw 'A network error has occurred while retrieving the signing key for the specified `client_domain`.'
-      }
-    }
-  }
-
-  const parseTomlFile = async (e) => {
+  const getChallengeTx = async (e) => {
     e.preventDefault()
     props.setError('')
+
     try {
       if (props.client) {
-        let clientKey = await getClientSigningKey(props.client)
+        let clientKey = await getClientDomainSigningKey(props.client)
         await props.setClientKey(clientKey)
       }
+
       let stellarToml = await StellarTomlResolver.resolve(props.homeDomain)
       await props.setToml(stellarToml)
-      await requestTransaction(stellarToml.WEB_AUTH_ENDPOINT)
+
+      let challengeTx = await requestChallengeTx({
+        domain: props.homeDomain,
+        pubkey: props.pubkey,
+        home_domain: props.otherHomeDomain,
+        client_domain: props.client
+      })
+
+      if (props.client === "sep10-client.elliotfriend.com") {
+        // console.log(props.xdr)
+        let keypair = Keypair.fromSecret("SBIY7LVQPTZAJGYYJDNOMMJ6WJYL3BRXXY67UE4UWKV46A56B3MBMRST")
+        let signedTx = signChallengeTx(challengeTx, keypair, stellarToml.NETWORK_PASSPHRASE)
+        props.setXDR(signedTx)
+      } else {
+        props.setXDR(challengeTx)
+      }
+
       document.querySelector('#challenge-tab').click()
-    }
-    catch (error) {
-      props.setError(error)
+    } catch (error) {
+      props.setError(error.toString())
     }
   }
 
@@ -108,7 +89,7 @@ export default function RequestTX(props) {
               <label htmlFor="clientDomain" className="form-label">Client Domain (Optional)</label>
               <input onChange={handleClientChange} type="url" name="clientDomain" className="text-center form-control" id="clientDomain" />
             </div>
-            <button onClick={parseTomlFile} className="btn btn-primary">Request Challenge Transaction</button>
+            <button onClick={getChallengeTx} className="btn btn-primary">Request Challenge Transaction</button>
           </form>
         </div>
         <div className="col-12 col-lg-8 order-first order-lg-last mb-4">
@@ -123,3 +104,5 @@ export default function RequestTX(props) {
     </div>
   )
 };
+
+export default RequestTX

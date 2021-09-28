@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './ChallengeTX.css';
-import { TransactionBuilder, Keypair } from 'stellar-sdk';
+import { Keypair } from 'stellar-sdk';
 import ChallengeDetails from './ChallengeDetails'
 import ChallengeDescription from './ChallengeDescription'
 import Error from '../../Error'
+import signChallengeTx from '../../lib/signChallengeTx'
+import submitChallengeTx from '../../lib/submitChallengeTx'
 
-export default function ChallengeTX(props) {
+const ChallengeTX = (props) => {
   // testnet account
   // GA6US5WSS3TDQ5R2X56PDKYFK6GOHZNFHXBOKRMUCPDAUY6NJ45BRXHK
   // SAZKDRHB7TOL6G3PRFCE3FHTTT6N6YQ3PBBOBBNNIMK4WWMLUFJKONLS
@@ -26,39 +28,17 @@ export default function ChallengeTX(props) {
     obj.select()
   }
 
-  const signTransaction = async () => {
-    if (xdr && secretKey) {
-      props.setError('')
-      try {
-        let kp = Keypair.fromSecret(secretKey)
-        let transaction = TransactionBuilder.fromXDR(xdr, toml.NETWORK_PASSPHRASE)
-        transaction.sign(kp)
-        let jwt = await submitTransaction(transaction.toXDR())
-        await props.setJWT(jwt)
-        document.querySelector("#jwt-tab").click()
-      }
-      catch (error) {
-        props.setError(error.toString())
-      }
+  const getJwtToken = async () => {
+    props.setError('')
+    try {
+      let keypair = Keypair.fromSecret(secretKey)
+      let transaction = signChallengeTx(xdr, keypair, toml.NETWORK_PASSPHRASE)
+      let jwt = await submitChallengeTx(toml.WEB_AUTH_ENDPOINT, transaction)
+      await props.setJWT(jwt)
+      document.querySelector("#jwt-tab").click()
+    } catch (error) {
+      props.setError(error.toString())
     }
-  }
-
-  const submitTransaction = async (transactionXDR) => {
-    let res = await fetch(`${toml.WEB_AUTH_ENDPOINT}`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "transaction": transactionXDR
-      })
-    })
-    let json = await res.json()
-    if (!res.ok) {
-      throw json.error
-    }
-    return json.token
   }
 
   return (
@@ -80,7 +60,7 @@ export default function ChallengeTX(props) {
             <label htmlFor="secretKey" className="form-label">Secret Key</label>
             <input onChange={handleChange} type="password" className="text-center form-control" id="secretKey" name="secretKey" />
           </div>
-          <button onClick={signTransaction} className="btn btn-primary">Authenticate with Server</button>
+          <button onClick={getJwtToken} className="btn btn-primary">Authenticate with Server</button>
         </div>
         <div className="col-12 col-lg-8">
           { props.xdr
@@ -99,3 +79,5 @@ export default function ChallengeTX(props) {
     </div>
   )
 }
+
+export default ChallengeTX
